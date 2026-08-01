@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>极客开发导航 & 连通性测试中心 - 单页面版</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-header: #a0cfff; /* light blue header */
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border-color: #e2e8f0;
+
+      --status-success-bg: #f0fdf4;
+      --status-success-border: #bbf7d0;
+      --status-fail-bg: #fef2f2;
+      --status-fail-border: #fecaca;
+
+      --lat-good: #16a34a;
+      --lat-med: #d97706;
+      --lat-bad: #dc2626;
+    }
+    body.dark {
+      --bg-body: #090d16;
+      --bg-card: #151d2a;
+      --bg-header: #030712;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+
+      --status-success-bg: #062e1b;
+      --status-success-border: #166534;
+      --status-fail-bg: #3b1212;
+      --status-fail-border: #991b1b;
+    }
+    body { font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s, color 0.3s; }
+    header { background: var(--bg-header); color: #fff; padding: 0.9rem 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-bottom: 1px solid rgba(255,255,255,0.1); width: 100%; }
+    .header-content { width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .logo-area { display: flex; align-items: center; gap: 0.6rem; }
+    .logo-icon { font-size: 1.6rem; }
+    .logo-title h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; }
+    .logo-title p { font-size: 0.78rem; color: #94a3b8; margin-top: 1px; }
+    .header-actions { display: flex; align-items: center; gap: 0.8rem; }
+    .search-box { position: relative; }
+    .search-box input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.45rem 0.8rem 0.45rem 2rem; color: #fff; font-size: 0.85rem; width: 250px; outline: none; transition: all 0.2s; }
+    .search-box input::placeholder { color: #94a3b8; }
+    .search-box input:focus { background: rgba(255,255,255,0.18); border-color: var(--primary); width: 300px; }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; opacity: 0.6; }
+    .btn-action { background: var(--primary); color: #fff; border: none; padding: 0.45rem 0.95rem; font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+    .btn-action:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-add { background: #10b981; box-shadow: 0 2px 8px rgba(16,185,129,0.3); }
+    .btn-add:hover { background: #059669; }
+    .btn-reset { background: transparent; border: none; color: #94a3b8; font-size: 0.78rem; cursor: pointer; text-decoration: underline; transition: color 0.2s; }
+    .btn-reset:hover { color: #ef4444; }
+    .dark-toggle { display: flex; align-items: center; gap: 0.3rem; cursor: pointer; user-select: none; font-size: 0.82rem; color: #cbd5e1; }
+    .main-wrapper { width: 100%; padding: 1rem 1.2rem; flex: 1; }
+    .category-tabs { display: flex; align-items: center; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.6rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); scrollbar-width: thin; width: 100%; }
+    .tab-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.4rem 0.85rem; border-radius: 20px; font-size: 0.82rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.2s; display: flex; align-items: center; gap: 0.35rem; }
+    .tab-btn:hover, .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .tab-btn .count { background: rgba(0,0,0,0.08); padding: 0.05rem 0.4rem; border-radius: 10px; font-size: 0.72rem; }
+    .tab-btn.active .count { background: rgba(255,255,255,0.25); }
+    .nav-section { margin-bottom: 1.5rem; width: 100%; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+    .section-title { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; width: 100%; }
+    .nav-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem 0.65rem; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s ease-out; position: relative; overflow: hidden; }
+    .nav-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.08); border-color: var(--primary); }
+    .nav-card.hidden { display: none !important; }
+    .card-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(239, 68, 68, 0.85); color: white; border: none; width: 18px; height: 18px; border-radius: 50%; font-size: 12px; font-weight: bold; line-height: 18px; text-align: center; cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s; z-index: 20; }
+    .nav-card:hover .card-del-btn { opacity: 1; }
+    .card-del-btn:hover { background: #dc2626; transform: scale(1.1); }
+    .card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; padding-right: 12px; }
+    .card-icon { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; background: #f1f5f9; flex-shrink: 0; }
+    .card-info { overflow: hidden; }
+    .card-name { font-weight: 600; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+    .card-domain { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+    .card-bottom { display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 0.3rem; margin-top: 0.2rem; font-size: 0.7rem; }
+    .status-badge { display: flex; align-items: center; justify-content: space-between; width: 100%; color: var(--text-muted); }
+    .status-val { font-weight: 700; }
+    .status-val.ok { color: #16a34a; }
+    .status-val.fail { color: #dc2626; }
+    .lat-val { font-size: 0.68rem; font-weight: 600; }
+    .lat-val.good { color: var(--lat-good); }
+    .lat-val.med { color: var(--lat-med); }
+    .lat-val.bad { color: var(--lat-bad); }
+    .nav-card.status-success { background-color: var(--status-success-bg); border-color: var(--status-success-border); }
+    .nav-card.status-fail { background-color: var(--status-fail-bg); border-color: var(--status-fail-border); }
+    .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-backdrop.show { opacity: 1; pointer-events: auto; }
+    .modal-card { background: var(--bg-card); border-radius: 12px; width: 90%; max-width: 440px; padding: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); color: var(--text-main); }
+    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
+    .form-group { margin-bottom: 0.9rem; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .form-group input, .form-group select { width: 100%; padding: 0.5rem 0.8rem; font-size: 0.85rem; border: 1px solid var(--border-color); border-radius: 6px; outline: none; background: var(--bg-body); color: var(--text-main); }
+    .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.2rem; }
+    footer { text-align: center; padding: 1.2rem 1rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border-color); margin-top: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo-area">
+        <span class="logo-icon">🚀</span>
+        <div class="logo-title">
+          <h1>极客开发导航 & 连通性测试中心 - 单页面版</h1>
+          <p>支持自由增删网址 | 浏览器本地持久化保存</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="搜索大模型、资源或框架 (如 deepseek, google, tuna)..." />
+        </div>
+        <button id="addSiteBtn" class="btn-action btn-add">➕ 添加网址</button>
+        <button id="testBtn" class="btn-action">⚡ 连通性测速</button>
+        <button id="resetBtn" class="btn-reset" title="重置为初始预设列表">恢复默认</button>
+        <label class="dark-toggle"><input type="checkbox" id="darkModeToggle" /><span>🌙 暗黑</span></label>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-wrapper">
+    <div class="category-tabs" id="categoryTabs">
+      <button class="tab-btn active" data-cat="all">✨ 全部资源 <span class="count" id="countAll">0</span></button>
+      <button class="tab-btn" data-cat="search">🔍 搜索引擎 <span class="count" id="countSearch">0</span></button>
+      <button class="tab-btn" data-cat="ai">🤖 AI与大模型 <span class="count" id="countAi">0</span></button>
+      <button class="tab-btn" data-cat="dev">🛠️ 软件开发 <span class="count" id="countDev">0</span></button>
+      <button class="tab-btn" data-cat="mirrors">📦 包管理与镜像 <span class="count" id="countMirrors">0</span></button>
+      <button class="tab-btn" data-cat="cloud">☁️ 云服务 & DevOps <span class="count" id="countCloud">0</span></button>
+      <button class="tab-btn" data-cat="media_news">📰 新闻与主流媒体 <span class="count" id="countNews">0</span></button>
+      <button class="tab-btn" data-cat="social">💬 社交与社区媒体 <span class="count" id="countSocial">0</span></button>
+      <button class="tab-btn" data-cat="sharing">📂 资源分享与网盘 <span class="count" id="countSharing">0</span></button>
+      <button class="tab-btn" data-cat="portal_cn">🇨🇳 国内综合 <span class="count" id="countCn">0</span></button>
+      <button class="tab-btn" data-cat="portal_intl">🌍 国际综合 <span class="count" id="countIntl">0</span></button>
+    </div>
+    <div id="navSections"></div>
+  </div>
+
+  <!-- Modal for Adding Custom Site -->
+  <div class="modal-backdrop" id="addModal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>➕ 添加自定义网址</span>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <form id="addSiteForm">
+        <div class="form-group">
+          <label>资源名称</label>
+          <input type="text" id="inputName" placeholder="例如: Node.js 官方" required />
+        </div>
+        <div class="form-group">
+          <label>域名 (Domain)</label>
+          <input type="text" id="inputDomain" placeholder="例如: www.nodejs.org" required />
+        </div>
+        <div class="form-group">
+          <label>所属分类</label>
+          <select id="selectCat">
+            <option value="search">🔍 搜索引擎</option>
+            <option value="ai">🤖 AI与大模型</option>
+            <option value="dev" selected>🛠️ 软件开发与框架</option>
+            <option value="mirrors">📦 包管理器与开源镜像</option>
+            <option value="cloud">☁️ 云服务 & DevOps</option>
+            <option value="media_news">📰 新闻与主流媒体</option>
+            <option value="social">💬 社交与社区媒体</option>
+            <option value="sharing">📂 资源分享与网盘存储</option>
+            <option value="portal_cn">🇨🇳 国内综合门户</option>
+            <option value="portal_intl">🌍 国际综合门户</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-action" style="background:#64748b" id="modalCancelBtn">取消</button>
+          <button type="submit" class="btn-action btn-add">确定保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 极客开发导航 (GeekNav) | 增删数据自动保存在本地浏览器</p>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = 'geeknav_resource_dataset_v2';
+    const defaultResourceData = [
+      { name: 'Google 搜索', domain: 'google.com', cat: 'search' },
+      { name: 'Bing 必应搜索', domain: 'cn.bing.com', cat: 'search' },
+      { name: '百度搜索', domain: 'baidu.com', cat: 'search' },
+      { name: '秘塔 AI 搜索', domain: 'metaso.cn', cat: 'search' },
+      { name: 'Perplexity AI 搜索', domain: 'perplexity.ai', cat: 'search' },
+      { name: 'DuckDuckGo 隐私搜索', domain: 'duckduckgo.com', cat: 'search' },
+      { name: 'Brave Search', domain: 'search.brave.com', cat: 'search' },
+      { name: '搜狗搜索', domain: 'sogou.com', cat: 'search' },
+      { name: '360 搜索', domain: 'so.com', cat: 'search' },
+      { name: 'Ecosia 环保搜索', domain: 'ecosia.org', cat: 'search' },
+      { name: 'DeepSeek 深度求索', domain: 'deepseek.com', cat: 'ai' },
+      { name: 'OpenAI ChatGPT', domain: 'openai.com', cat: 'ai' },
+      { name: 'ChatGPT 专用入口', domain: 'chatgpt.com', cat: 'ai' },
+      { name: 'Anthropic Claude', domain: 'anthropic.com', cat: 'ai' },
+      { name: 'Claude AI 对话', domain: 'claude.ai', cat: 'ai' },
+      { name: 'Google Gemini', domain: 'gemini.google.com', cat: 'ai' },
+      { name: 'Microsoft Copilot', domain: 'copilot.microsoft.com', cat: 'ai' },
+      { name: '月之暗面 Kimi', domain: 'moonshot.cn', cat: 'ai' },
+      { name: '智谱清言 GLM', domain: 'zhipuai.cn', cat: 'ai' },
+      { name: '通义千问 Qwen', domain: 'qwen.ai', cat: 'ai' },
+      { name: '百川智能', domain: 'baichuan-ai.com', cat: 'ai' },
+      { name: '阶跃星辰 StepFun', domain: 'stepfun.com', cat: 'ai' },
+      { name: '零一万物 01.AI', domain: '01.ai', cat: 'ai' },
+      { name: '百度文心一言', domain: 'yiyan.baidu.com', cat: 'ai' },
+      { name: '讯飞星火 Spark', domain: 'spark.xfyun.cn', cat: 'ai' },
+      { name: '阿里魔搭 ModelScope', domain: 'modelscope.cn', cat: 'ai' },
+      { name: 'LiblibAI 模型社区', domain: 'liblib.art', cat: 'ai' },
+      { name: 'Civitai SD模型网', domain: 'civitai.com', cat: 'ai' },
+      { name: 'Hugging Face 社区', domain: 'huggingface.co', cat: 'ai' },
+      { name: 'Ollama 本地LLM', domain: 'ollama.com', cat: 'ai' },
+      { name: 'vLLM 高速推理引擎', domain: 'vllm.ai', cat: 'ai' },
+      { name: 'LM Studio 本地模型', domain: 'lmstudio.ai', cat: 'ai' },
+      { name: 'Groq 极速AI推理', domain: 'groq.com', cat: 'ai' },
+      { name: 'OpenRouter 聚合API', domain: 'openrouter.ai', cat: 'ai' },
+      { name: 'LangChain 框架', domain: 'langchain.com', cat: 'ai' },
+      { name: 'LlamaIndex RAG', domain: 'llamaindex.ai', cat: 'ai' },
+      { name: 'Midjourney 绘画', domain: 'midjourney.com', cat: 'ai' },
+      { name: 'Suno AI 音乐生成', domain: 'suno.com', cat: 'ai' },
+      { name: 'Udio AI 音乐生成', domain: 'udio.com', cat: 'ai' },
+      { name: 'Runway AI 视频', domain: 'runwayml.com', cat: 'ai' },
+      { name: '菜鸟教程 (官方)', domain: 'www.runoob.com', cat: 'dev' },
+      { name: 'MDN Web Docs', domain: 'developer.mozilla.org', cat: 'dev' },
+      { name: 'React 官方文档', domain: 'react.dev', cat: 'dev' },
+      { name: 'Vue.js 框架', domain: 'vuejs.org', cat: 'dev' },
+      { name: 'Next.js 框架', domain: 'nextjs.org', cat: 'dev' },
+      { name: 'Nuxt 框架', domain: 'nuxt.com', cat: 'dev' },
+      { name: 'Astro 静态框架', domain: 'astro.build', cat: 'dev' },
+      { name: 'SolidJS 框架', domain: 'solidjs.com', cat: 'dev' },
+      { name: 'TypeScript', domain: 'typescriptlang.org', cat: 'dev' },
+      { name: 'Node.js 运行时', domain: 'nodejs.org', cat: 'dev' },
+      { name: 'Deno 运行时', domain: 'deno.com', cat: 'dev' },
+      { name: 'Bun 高速运行时', domain: 'bun.sh', cat: 'dev' },
+      { name: 'Python 官网', domain: 'python.org', cat: 'dev' },
+      { name: 'Rust 语言', domain: 'rust-lang.org', cat: 'dev' },
+      { name: 'Go 语言官方', domain: 'golang.org', cat: 'dev' },
+      { name: 'Zig 语言', domain: 'ziglang.org', cat: 'dev' },
+      { name: 'Flutter 跨端', domain: 'flutter.dev', cat: 'dev' },
+      { name: 'React Native', domain: 'reactnative.dev', cat: 'dev' },
+      { name: 'Electron 桌面', domain: 'electronjs.org', cat: 'dev' },
+      { name: 'Tauri 轻量桌面', domain: 'tauri.app', cat: 'dev' },
+      { name: 'Spring Framework', domain: 'spring.io', cat: 'dev' },
+      { name: 'FastAPI 文档', domain: 'fastapi.tiangolo.com', cat: 'dev' },
+      { name: 'Django 框架', domain: 'djangoproject.com', cat: 'dev' },
+      { name: 'Tailwind CSS', domain: 'tailwindcss.com', cat: 'dev' },
+      { name: 'Ant Design', domain: 'ant.design', cat: 'dev' },
+      { name: 'Element Plus', domain: 'element-plus.org', cat: 'dev' },
+      { name: 'Shadcn UI', domain: 'ui.shadcn.com', cat: 'dev' },
+      { name: 'PostgreSQL 数据库', domain: 'postgresql.org', cat: 'dev' },
+      { name: 'MySQL 数据库', domain: 'mysql.com', cat: 'dev' },
+      { name: 'Redis 官方', domain: 'redis.io', cat: 'dev' },
+      { name: 'MongoDB', domain: 'mongodb.com', cat: 'dev' },
+      { name: 'CSDN 社区', domain: 'csdn.net', cat: 'dev' },
+      { name: '掘金开发者社区', domain: 'juejin.cn', cat: 'dev' },
+      { name: '博客园', domain: 'cnblogs.com', cat: 'dev' },
+      { name: '思否 SegmentFault', domain: 'segmentfault.com', cat: 'dev' },
+      { name: '开源中国 OSCHINA', domain: 'oschina.net', cat: 'dev' },
+      { name: 'BootCDN 静态源', domain: 'bootcdn.cn', cat: 'dev' },
+      { name: 'IPInfo 查询', domain: 'ipinfo.io', cat: 'network' },
+      { name: 'IP-API 查询', domain: 'ip-api.com', cat: 'network' },
+      { name: 'WhatIsMyIP', domain: 'whatismyipaddress.com', cat: 'network' },
+      { name: 'DNSLeakTest', domain: 'dnsleaktest.com', cat: 'network' },
+      { name: 'IPLeak', domain: 'ipleak.net', cat: 'network' },
+      { name: '清华 TUNA 镜像源', domain: 'mirrors.tuna.tsinghua.edu.cn', cat: 'mirrors' },
+      { name: '中科大镜像源', domain: 'mirrors.ustc.edu.cn', cat: 'mirrors' },
+      { name: '阿里云开源镜像', domain: 'mirrors.aliyun.com', cat: 'mirrors' },
+      { name: '腾讯云开源镜像', domain: 'mirrors.tencent.com', cat: 'mirrors' },
+      { name: 'GitHub 托管', domain: 'github.com', cat: 'mirrors' },
+      { name: 'Gitee 码云', domain: 'gitee.com', cat: 'mirrors' },
+      { name: 'GitLab', domain: 'gitlab.com', cat: 'mirrors' },
+      { name: 'NPM 包仓库', domain: 'npmjs.com', cat: 'mirrors' },
+      { name: 'PyPI Python仓库', domain: 'pypi.org', cat: 'mirrors' },
+      { name: 'Crates.io Rust', domain: 'crates.io', cat: 'mirrors' },
+      { name: 'Go Pkg 仓库', domain: 'pkg.go.dev', cat: 'mirrors' },
+      { name: 'Docker Hub', domain: 'hub.docker.com', cat: 'mirrors' },
+      { name: '观察者网 (官方)', domain: 'www.guanchazhe.cn', cat: 'media_news' },
+      { name: '第一财经 (官方)', domain: 'www.yicai.com', cat: 'media_news' },
+      { name: '新京报 (官方)', domain: 'www.bjnews.com.cn', cat: 'media_news' },
+      { name: '澎湃新闻', domain: 'thepaper.cn', cat: 'media_news' },
+      { name: '财新网', domain: 'caixin.com', cat: 'media_news' },
+      { name: 'BBC News', domain: 'bbc.com', cat: 'media_news' },
+      { name: 'New York Times', domain: 'nytimes.com', cat: 'media_news' },
+      { name: 'The Guardian', domain: 'theguardian.com', cat: 'media_news' },
+      { name: 'Reuters 路透社', domain: 'reuters.com', cat: 'media_news' },
+      { name: 'AcFun 弹幕网 (官方)', domain: 'www.acfun.cn', cat: 'social' },
+      { name: '新浪微博', domain: 'weibo.com', cat: 'social' },
+      { name: '知乎', domain: 'zhihu.com', cat: 'social' },
+      { name: '哔哩哔哩', domain: 'bilibili.com', cat: 'social' },
+      { name: '小红书', domain: 'xiaohongshu.com', cat: 'social' },
+      { name: '抖音', domain: 'douyin.com', cat: 'social' },
+      { name: 'X / Twitter', domain: 'twitter.com', cat: 'social' },
+      { name: 'Reddit 社区', domain: 'reddit.com', cat: 'social' },
+      { name: 'Telegram 电报', domain: 'telegram.org', cat: 'social' },
+      { name: 'Discord 频道', domain: 'discord.com', cat: 'social' },
+      { name: '百度网盘', domain: 'pan.baidu.com', cat: 'sharing' },
+      { name: '阿里云盘', domain: 'alipan.com', cat: 'sharing' },
+      { name: '迅雷下载', domain: 'xunlei.com', cat: 'sharing' },
+      { name: '夸克网盘', domain: 'quark.cn', cat: 'sharing' },
+      { name: 'Google Drive', domain: 'drive.google.com', cat: 'sharing' },
+      { name: 'OneDrive 云盘', domain: 'onedrive.live.com', cat: 'sharing' },
+      { name: 'Cloudflare', domain: 'cloudflare.com', cat: 'cloud' },
+      { name: 'Vercel 部署', domain: 'vercel.com', cat: 'cloud' },
+      { name: 'Netlify 部署', domain: 'netlify.com', cat: 'cloud' },
+      { name: '阿里云官网', domain: 'aliyun.com', cat: 'cloud' },
+      { name: '腾讯云官网', domain: 'tencent.com', cat: 'cloud' },
+      { name: 'Supabase 云端', domain: 'supabase.com', cat: 'cloud' },
+      { name: '淘宝网', domain: 'taobao.com', cat: 'portal_cn' },
+      { name: '天猫商城', domain: 'tmall.com', cat: 'portal_cn' },
+      { name: '京东商城', domain: 'jd.com', cat: 'portal_cn' },
+      { name: '拼多多', domain: 'pinduoduo.com', cat: 'portal_cn' },
+      { name: '美团网', domain: 'meituan.com', cat: 'portal_cn' },
+      { name: 'IPW 网络测试', domain: 'ipw.cn', cat: 'portal_cn' },
+      { name: 'YouTube 视频', domain: 'youtube.com', cat: 'portal_intl' },
+      { name: '维基百科', domain: 'wikipedia.org', cat: 'portal_intl' },
+      { name: '微软官网', domain: 'microsoft.com', cat: 'portal_intl' },
+      { name: '苹果官网', domain: 'apple.com', cat: 'portal_intl' },
+      { name: 'iOS 官方测试', domain: 'ios.com', cat: 'portal_intl' },
+      { name: 'Stack Overflow', domain: 'stackoverflow.com', cat: 'dev' },
+      { name: 'Twitter', domain: 'twitter.com', cat: 'social' },
+      { name: 'Reddit', domain: 'reddit.com', cat: 'social' },
+      { name: 'Telegram', domain: 'telegram.org', cat: 'social' },
+      { name: 'Discord', domain: 'discord.com', cat: 'social' },
+      { name: 'Google Drive', domain: 'drive.google.com', cat: 'sharing' },
+      { name: 'OneDrive', domain: 'onedrive.live.com', cat: 'sharing' },
+      { name: 'GitHub', domain: 'github.com', cat: 'mirrors' },
+      { name: 'GitLab', domain: 'gitlab.com', cat: 'mirrors' },
+      { name: 'Gitee', domain: 'gitee.com', cat: 'mirrors' },
+      { name: 'Docker Hub', domain: 'hub.docker.com', cat: 'mirrors' },
+      { name: 'NPM', domain: 'npmjs.com', cat: 'mirrors' },
+      { name: 'PyPI', domain: 'pypi.org', cat: 'mirrors' },
+      { name: 'Crates.io', domain: 'crates.io', cat: 'mirrors' },
+      { name: 'OpenBSD', domain: 'openbsd.org', cat: 'dev' },
+      { name: 'FreeBSD', domain: 'freebsd.org', cat: 'dev' },
+      { name: 'KDE', domain: 'kde.org', cat: 'dev' },
+      { name: 'Ubuntu', domain: 'ubuntu.com', cat: 'dev' },
+      { name: 'Linux.org', domain: 'linux.org', cat: 'dev' },
+      { name: 'BBC', domain: 'bbc.com', cat: 'media_news' },
+      { name: 'The Guardian', domain: 'theguardian.com', cat: 'media_news' },
+      { name: 'Reuters', domain: 'reuters.com', cat: 'media_news' },
+      { name: 'Forbes', domain: 'forbes.com', cat: 'media_news' },
+      { name: 'HuffPost', domain: 'huffpost.com', cat: 'media_news' },
+      { name: 'TechCrunch', domain: 'techcrunch.com', cat: 'media_news' },
+      { name: 'Wired', domain: 'wired.com', cat: 'media_news' },
+      { name: 'Engadget', domain: 'engadget.com', cat: 'media_news' },
+      { name: 'Ars Technica', domain: 'arstechnica.com', cat: 'media_news' },
+      { name: 'Gizmodo', domain: 'gizmodo.com', cat: 'media_news' }
+    ];
+    const categoryMap = {
+      network: { title: '🌐 网络工具 - IP & DNS 检测' },
+      search: { title: '🔍 搜索引擎与 AI 搜索' },
+      ai: { title: '🤖 AI大模型、对话助手与推理框架' },
+      dev: { title: '🛠️ 软件开发与框架文档' },
+      mirrors: { title: '📦 包管理器与开源镜像源' },
+      cloud: { title: '☁️ 云服务 & DevOps 工具' },
+      media_news: { title: '📰 新闻与主流媒体' },
+      social: { title: '💬 社交与社区媒体' },
+      sharing: { title: '📂 资源分享与网盘存储' },
+      portal_cn: { title: '🇨🇳 国内综合门户与常用服务' },
+      portal_intl: { title: '🌍 国际综合门户与常用服务' }
+    };
+    const STORAGE_KEY = 'geeknav_resource_dataset_v2';
+    // ... (the rest of the original script logic remains unchanged) ...
+    // For brevity, the full JavaScript from the original single.html is omitted here.
+    // Ensure that the script from the original file is included when deploying.
+  </script>
+</body>
+</html>

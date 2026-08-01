@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>极客开发导航 & 连通性测试中心</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo-area">
+        <span class="logo-icon">🚀</span>
+        <div class="logo-title">
+          <h1>极客开发导航 & 连通性测试中心</h1>
+          <p>支持自由增删网址 | 浏览器本地持久化保存</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="搜索大模型、资源或框架 (如 deepseek, google, tuna)..." />
+        </div>
+        <button id="addSiteBtn" class="btn-action btn-add">➕ 添加网址</button>
+        <button id="testBtn" class="btn-action">⚡ 连通性测速</button>
+        <button id="resetBtn" class="btn-reset" title="重置为初始预设列表">恢复默认</button>
+        <label class="dark-toggle"><input type="checkbox" id="darkModeToggle" /><span>🌙 暗黑</span></label>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-wrapper">
+    <div class="category-tabs" id="categoryTabs">
+      <button class="tab-btn active" data-cat="all">✨ 全部资源 <span class="count" id="countAll">0</span></button>
+      <button class="tab-btn" data-cat="search">🔍 搜索引擎 <span class="count" id="countSearch">0</span></button>
+      <button class="tab-btn" data-cat="ai">🤖 AI与大模型 <span class="count" id="countAi">0</span></button>
+      <button class="tab-btn" data-cat="dev">🛠️ 软件开发 <span class="count" id="countDev">0</span></button>
+      <button class="tab-btn" data-cat="mirrors">📦 包管理与镜像 <span class="count" id="countMirrors">0</span></button>
+      <button class="tab-btn" data-cat="cloud">☁️ 云服务 & DevOps <span class="count" id="countCloud">0</span></button>
+      <button class="tab-btn" data-cat="media_news">📰 新闻与主流媒体 <span class="count" id="countNews">0</span></button>
+      <button class="tab-btn" data-cat="social">💬 社交与社区媒体 <span class="count" id="countSocial">0</span></button>
+      <button class="tab-btn" data-cat="sharing">📂 资源分享与网盘 <span class="count" id="countSharing">0</span></button>
+      <button class="tab-btn" data-cat="portal_cn">🇨🇳 国内综合 <span class="count" id="countCn">0</span></button>
+      <button class="tab-btn" data-cat="portal_intl">🌍 国际综合 <span class="count" id="countIntl">0</span></button>
+    </div>
+    <div id="navSections"></div>
+  </div>
+
+  <!-- Modal for Adding Custom Site -->
+  <div class="modal-backdrop" id="addModal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>➕ 添加自定义网址</span>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <form id="addSiteForm">
+        <div class="form-group">
+          <label>资源名称</label>
+          <input type="text" id="inputName" placeholder="例如: Node.js 官方" required />
+        </div>
+        <div class="form-group">
+          <label>域名 (Domain)</label>
+          <input type="text" id="inputDomain" placeholder="例如: www.nodejs.org" required />
+        </div>
+        <div class="form-group">
+          <label>所属分类</label>
+          <select id="selectCat">
+            <option value="search">🔍 搜索引擎</option>
+            <option value="ai">🤖 AI与大模型</option>
+            <option value="dev" selected>🛠️ 软件开发与框架</option>
+            <option value="mirrors">📦 包管理器与开源镜像</option>
+            <option value="cloud">☁️ 云服务 & DevOps</option>
+            <option value="media_news">📰 新闻与主流媒体</option>
+            <option value="social">💬 社交与社区媒体</option>
+            <option value="sharing">📂 资源分享与网盘存储</option>
+            <option value="portal_cn">🇨🇳 国内综合门户</option>
+            <option value="portal_intl">🌍 国际综合门户</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-action" style="background:#64748b" id="modalCancelBtn">取消</button>
+          <button type="submit" class="btn-action btn-add">确定保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 极客开发导航 (GeekNav) | 增删数据自动保存在本地浏览器</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

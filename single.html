@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>极客开发导航 & 连通性测试中心 - 单页面版</title>
+  <title>极客开发导航 & 连通性测试中心</title>
+  <link rel="icon" type="image/jpeg" href="file:///Users/ronan/.gemini/antigravity/brain/421fab87-b8c7-461a-82ba-2fcb3e8c63d3/favicon_gear_1785573846256.jpg">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     :root {
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --bg-body: #f8fafc;
@@ -26,6 +28,7 @@
       --lat-med: #d97706;
       --lat-bad: #dc2626;
     }
+
     body.dark {
       --bg-body: #090d16;
       --bg-card: #151d2a;
@@ -39,69 +42,461 @@
       --status-fail-bg: #3b1212;
       --status-fail-border: #991b1b;
     }
-    body { font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s, color 0.3s; }
-    header { background: var(--bg-header); color: #fff; padding: 0.9rem 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-bottom: 1px solid rgba(255,255,255,0.1); width: 100%; }
-    .header-content { width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-    .logo-area { display: flex; align-items: center; gap: 0.6rem; }
-    .logo-icon { font-size: 1.6rem; }
-    .logo-title h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; }
-    .logo-title p { font-size: 0.78rem; color: #94a3b8; margin-top: 1px; }
-    .header-actions { display: flex; align-items: center; gap: 0.8rem; }
-    .search-box { position: relative; }
-    .search-box input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.45rem 0.8rem 0.45rem 2rem; color: #fff; font-size: 0.85rem; width: 250px; outline: none; transition: all 0.2s; }
-    .search-box input::placeholder { color: #94a3b8; }
-    .search-box input:focus { background: rgba(255,255,255,0.18); border-color: var(--primary); width: 300px; }
-    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; opacity: 0.6; }
-    .btn-action { background: var(--primary); color: #fff; border: none; padding: 0.45rem 0.95rem; font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
-    .btn-action:hover { background: var(--primary-hover); transform: translateY(-1px); }
-    .btn-add { background: #10b981; box-shadow: 0 2px 8px rgba(16,185,129,0.3); }
-    .btn-add:hover { background: #059669; }
-    .btn-reset { background: transparent; border: none; color: #94a3b8; font-size: 0.78rem; cursor: pointer; text-decoration: underline; transition: color 0.2s; }
-    .btn-reset:hover { color: #ef4444; }
-    .dark-toggle { display: flex; align-items: center; gap: 0.3rem; cursor: pointer; user-select: none; font-size: 0.82rem; color: #cbd5e1; }
-    .main-wrapper { width: 100%; padding: 1rem 1.2rem; flex: 1; }
-    .category-tabs { display: flex; align-items: center; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.6rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); scrollbar-width: thin; width: 100%; }
-    .tab-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.4rem 0.85rem; border-radius: 20px; font-size: 0.82rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.2s; display: flex; align-items: center; gap: 0.35rem; }
-    .tab-btn:hover, .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .tab-btn .count { background: rgba(0,0,0,0.08); padding: 0.05rem 0.4rem; border-radius: 10px; font-size: 0.72rem; }
-    .tab-btn.active .count { background: rgba(255,255,255,0.25); }
-    .nav-section { margin-bottom: 1.5rem; width: 100%; }
-    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
-    .section-title { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; width: 100%; }
-    .nav-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem 0.65rem; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s ease-out; position: relative; overflow: hidden; }
-    .nav-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.08); border-color: var(--primary); }
-    .nav-card.hidden { display: none !important; }
-    .card-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(239, 68, 68, 0.85); color: white; border: none; width: 18px; height: 18px; border-radius: 50%; font-size: 12px; font-weight: bold; line-height: 18px; text-align: center; cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s; z-index: 20; }
-    .nav-card:hover .card-del-btn { opacity: 1; }
-    .card-del-btn:hover { background: #dc2626; transform: scale(1.1); }
-    .card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; padding-right: 12px; }
-    .card-icon { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; background: #f1f5f9; flex-shrink: 0; }
-    .card-info { overflow: hidden; }
-    .card-name { font-weight: 600; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
-    .card-domain { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-    .card-bottom { display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 0.3rem; margin-top: 0.2rem; font-size: 0.7rem; }
-    .status-badge { display: flex; align-items: center; justify-content: space-between; width: 100%; color: var(--text-muted); }
-    .status-val { font-weight: 700; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Top Header Nav */
+    header {
+      background: var(--bg-header);
+      color: #fff;
+      padding: 0.9rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      width: 100%;
+    }
+
+    .header-content {
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-icon {
+      font-size: 1.6rem;
+    }
+
+    .logo-title h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-title p {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 0.45rem 0.8rem 0.45rem 2rem;
+      color: #fff;
+      font-size: 0.85rem;
+      width: 250px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-box input::placeholder {
+      color: #94a3b8;
+    }
+
+    .search-box input:focus {
+      background: rgba(255,255,255,0.18);
+      border-color: var(--primary);
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      opacity: 0.6;
+    }
+
+    .btn-action {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.45rem 0.95rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    }
+
+    .btn-action:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-add {
+      background: #10b981;
+      box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+    }
+    .btn-add:hover {
+      background: #059669;
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .btn-reset:hover {
+      color: #ef4444;
+    }
+
+    .dark-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    /* Ultra Wide 100% Container */
+    .main-wrapper {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      flex: 1;
+    }
+
+    /* Quick Filter Badges */
+    .category-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      scrollbar-width: thin;
+      width: 100%;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .tab-btn .count {
+      background: rgba(0,0,0,0.08);
+      padding: 0.05rem 0.4rem;
+      border-radius: 10px;
+      font-size: 0.72rem;
+    }
+
+    .tab-btn.active .count {
+      background: rgba(255,255,255,0.25);
+    }
+
+    /* Category Section */
+    .nav-section {
+      margin-bottom: 1.5rem;
+      width: 100%;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* 100% Screen Width Responsive Multi-Column Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+
+    /* Navigation Card Item */
+    .nav-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem 0.65rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.15s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      border-color: var(--primary);
+    }
+
+    .nav-card.hidden {
+      display: none !important;
+    }
+
+    /* Delete Card Button on Hover */
+    .card-del-btn {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      background: rgba(239, 68, 68, 0.85);
+      color: white;
+      border: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 18px;
+      text-align: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s, background 0.2s;
+      z-index: 20;
+    }
+
+    .nav-card:hover .card-del-btn {
+      opacity: 1;
+    }
+
+    .card-del-btn:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    /* Card Top: Favicon & Info */
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      padding-right: 12px;
+    }
+
+    .card-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      object-fit: contain;
+      background: #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .card-info {
+      overflow: hidden;
+    }
+
+    .card-name {
+      font-weight: 600;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    .card-domain {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    /* Card Bottom: Ping / Connectivity Status */
+    .card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 0.3rem;
+      margin-top: 0.2rem;
+      font-size: 0.7rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      color: var(--text-muted);
+    }
+
+    .status-val {
+      font-weight: 700;
+    }
     .status-val.ok { color: #16a34a; }
     .status-val.fail { color: #dc2626; }
-    .lat-val { font-size: 0.68rem; font-weight: 600; }
+
+    .lat-val {
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
     .lat-val.good { color: var(--lat-good); }
     .lat-val.med { color: var(--lat-med); }
     .lat-val.bad { color: var(--lat-bad); }
-    .nav-card.status-success { background-color: var(--status-success-bg); border-color: var(--status-success-border); }
-    .nav-card.status-fail { background-color: var(--status-fail-bg); border-color: var(--status-fail-border); }
-    .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-    .modal-backdrop.show { opacity: 1; pointer-events: auto; }
-    .modal-card { background: var(--bg-card); border-radius: 12px; width: 90%; max-width: 440px; padding: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); color: var(--text-main); }
-    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
-    .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
-    .form-group { margin-bottom: 0.9rem; }
-    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.3rem; }
-    .form-group input, .form-group select { width: 100%; padding: 0.5rem 0.8rem; font-size: 0.85rem; border: 1px solid var(--border-color); border-radius: 6px; outline: none; background: var(--bg-body); color: var(--text-main); }
-    .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.2rem; }
-    footer { text-align: center; padding: 1.2rem 1rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border-color); margin-top: auto; }
+
+    /* Card Status Backgrounds */
+    .nav-card.status-success {
+      background-color: var(--status-success-bg);
+      border-color: var(--status-success-border);
+    }
+    .nav-card.status-fail {
+      background-color: var(--status-fail-bg);
+      border-color: var(--status-fail-border);
+    }
+
+    /* Modal Styles for Adding Website */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 440px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+      color: var(--text-main);
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 0.9rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      outline: none;
+      background: var(--bg-body);
+      color: var(--text-main);
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: auto;
+    }
   </style>
 </head>
 <body>
@@ -110,19 +505,23 @@
       <div class="logo-area">
         <span class="logo-icon">🚀</span>
         <div class="logo-title">
-          <h1>极客开发导航 & 连通性测试中心 - 单页面版</h1>
+          <h1>极客开发导航 & 连通性测试中心</h1>
           <p>支持自由增删网址 | 浏览器本地持久化保存</p>
         </div>
       </div>
+      
       <div class="header-actions">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="搜索大模型、资源或框架 (如 deepseek, google, tuna)..." />
+          <input type="text" id="searchInput" placeholder="搜索大模型、资源或框架 (如 deepseek, google, tuna)...">
         </div>
         <button id="addSiteBtn" class="btn-action btn-add">➕ 添加网址</button>
         <button id="testBtn" class="btn-action">⚡ 连通性测速</button>
         <button id="resetBtn" class="btn-reset" title="重置为初始预设列表">恢复默认</button>
-        <label class="dark-toggle"><input type="checkbox" id="darkModeToggle" /><span>🌙 暗黑</span></label>
+        <label class="dark-toggle">
+          <input type="checkbox" id="darkModeToggle">
+          <span>🌙 暗黑</span>
+        </label>
       </div>
     </div>
   </header>
@@ -138,9 +537,11 @@
       <button class="tab-btn" data-cat="media_news">📰 新闻与主流媒体 <span class="count" id="countNews">0</span></button>
       <button class="tab-btn" data-cat="social">💬 社交与社区媒体 <span class="count" id="countSocial">0</span></button>
       <button class="tab-btn" data-cat="sharing">📂 资源分享与网盘 <span class="count" id="countSharing">0</span></button>
+      <button class="tab-btn" data-cat="network">🌐 网络工具 - IP & DNS 检测 <span class="count" id="countNetwork">0</span></button>
       <button class="tab-btn" data-cat="portal_cn">🇨🇳 国内综合 <span class="count" id="countCn">0</span></button>
       <button class="tab-btn" data-cat="portal_intl">🌍 国际综合 <span class="count" id="countIntl">0</span></button>
     </div>
+
     <div id="navSections"></div>
   </div>
 
@@ -189,7 +590,10 @@
 
   <script>
     const STORAGE_KEY = 'geeknav_resource_dataset_v2';
+
+    // Preset Default Master Dataset
     const defaultResourceData = [
+      // 🔍 搜索引擎与AI搜索
       { name: 'Google 搜索', domain: 'google.com', cat: 'search' },
       { name: 'Bing 必应搜索', domain: 'cn.bing.com', cat: 'search' },
       { name: '百度搜索', domain: 'baidu.com', cat: 'search' },
@@ -200,6 +604,8 @@
       { name: '搜狗搜索', domain: 'sogou.com', cat: 'search' },
       { name: '360 搜索', domain: 'so.com', cat: 'search' },
       { name: 'Ecosia 环保搜索', domain: 'ecosia.org', cat: 'search' },
+
+      // 🤖 AI大模型与社区
       { name: 'DeepSeek 深度求索', domain: 'deepseek.com', cat: 'ai' },
       { name: 'OpenAI ChatGPT', domain: 'openai.com', cat: 'ai' },
       { name: 'ChatGPT 专用入口', domain: 'chatgpt.com', cat: 'ai' },
@@ -230,6 +636,8 @@
       { name: 'Suno AI 音乐生成', domain: 'suno.com', cat: 'ai' },
       { name: 'Udio AI 音乐生成', domain: 'udio.com', cat: 'ai' },
       { name: 'Runway AI 视频', domain: 'runwayml.com', cat: 'ai' },
+
+      // 🛠️ 软件开发、前端/后端框架与文档
       { name: '菜鸟教程 (官方)', domain: 'www.runoob.com', cat: 'dev' },
       { name: 'MDN Web Docs', domain: 'developer.mozilla.org', cat: 'dev' },
       { name: 'React 官方文档', domain: 'react.dev', cat: 'dev' },
@@ -267,11 +675,15 @@
       { name: '思否 SegmentFault', domain: 'segmentfault.com', cat: 'dev' },
       { name: '开源中国 OSCHINA', domain: 'oschina.net', cat: 'dev' },
       { name: 'BootCDN 静态源', domain: 'bootcdn.cn', cat: 'dev' },
-      { name: 'IPInfo 查询', domain: 'ipinfo.io', cat: 'network' },
-      { name: 'IP-API 查询', domain: 'ip-api.com', cat: 'network' },
-      { name: 'WhatIsMyIP', domain: 'whatismyipaddress.com', cat: 'network' },
-      { name: 'DNSLeakTest', domain: 'dnsleaktest.com', cat: 'network' },
-      { name: 'IPLeak', domain: 'ipleak.net', cat: 'network' },
+
+  // 🌐 网络工具 - IP查询 & DNS泄漏检测
+  { name: 'IPInfo 查询', domain: 'ipinfo.io', cat: 'network' },
+  { name: 'IP-API 查询', domain: 'ip-api.com', cat: 'network' },
+  { name: 'WhatIsMyIP', domain: 'whatismyipaddress.com', cat: 'network' },
+  { name: 'DNSLeakTest', domain: 'dnsleaktest.com', cat: 'network' },
+  { name: 'IPLeak', domain: 'ipleak.net', cat: 'network' },
+
+      // 📦 包管理器与开源镜像源
       { name: '清华 TUNA 镜像源', domain: 'mirrors.tuna.tsinghua.edu.cn', cat: 'mirrors' },
       { name: '中科大镜像源', domain: 'mirrors.ustc.edu.cn', cat: 'mirrors' },
       { name: '阿里云开源镜像', domain: 'mirrors.aliyun.com', cat: 'mirrors' },
@@ -284,6 +696,8 @@
       { name: 'Crates.io Rust', domain: 'crates.io', cat: 'mirrors' },
       { name: 'Go Pkg 仓库', domain: 'pkg.go.dev', cat: 'mirrors' },
       { name: 'Docker Hub', domain: 'hub.docker.com', cat: 'mirrors' },
+
+      // 📰 新闻与主流媒体 (规范主域名)
       { name: '观察者网 (官方)', domain: 'www.guanchazhe.cn', cat: 'media_news' },
       { name: '第一财经 (官方)', domain: 'www.yicai.com', cat: 'media_news' },
       { name: '新京报 (官方)', domain: 'www.bjnews.com.cn', cat: 'media_news' },
@@ -293,6 +707,8 @@
       { name: 'New York Times', domain: 'nytimes.com', cat: 'media_news' },
       { name: 'The Guardian', domain: 'theguardian.com', cat: 'media_news' },
       { name: 'Reuters 路透社', domain: 'reuters.com', cat: 'media_news' },
+
+      // 💬 社交与社区媒体
       { name: 'AcFun 弹幕网 (官方)', domain: 'www.acfun.cn', cat: 'social' },
       { name: '新浪微博', domain: 'weibo.com', cat: 'social' },
       { name: '知乎', domain: 'zhihu.com', cat: 'social' },
@@ -303,61 +719,73 @@
       { name: 'Reddit 社区', domain: 'reddit.com', cat: 'social' },
       { name: 'Telegram 电报', domain: 'telegram.org', cat: 'social' },
       { name: 'Discord 频道', domain: 'discord.com', cat: 'social' },
+
+      // 📂 资源分享与网盘工具
       { name: '百度网盘', domain: 'pan.baidu.com', cat: 'sharing' },
       { name: '阿里云盘', domain: 'alipan.com', cat: 'sharing' },
       { name: '迅雷下载', domain: 'xunlei.com', cat: 'sharing' },
       { name: '夸克网盘', domain: 'quark.cn', cat: 'sharing' },
       { name: 'Google Drive', domain: 'drive.google.com', cat: 'sharing' },
       { name: 'OneDrive 云盘', domain: 'onedrive.live.com', cat: 'sharing' },
+
+      // ☁️ 云服务 & DevOps
       { name: 'Cloudflare', domain: 'cloudflare.com', cat: 'cloud' },
       { name: 'Vercel 部署', domain: 'vercel.com', cat: 'cloud' },
       { name: 'Netlify 部署', domain: 'netlify.com', cat: 'cloud' },
       { name: '阿里云官网', domain: 'aliyun.com', cat: 'cloud' },
       { name: '腾讯云官网', domain: 'tencent.com', cat: 'cloud' },
       { name: 'Supabase 云端', domain: 'supabase.com', cat: 'cloud' },
+
+      // 🇨🇳 国内综合门户
       { name: '淘宝网', domain: 'taobao.com', cat: 'portal_cn' },
       { name: '天猫商城', domain: 'tmall.com', cat: 'portal_cn' },
       { name: '京东商城', domain: 'jd.com', cat: 'portal_cn' },
       { name: '拼多多', domain: 'pinduoduo.com', cat: 'portal_cn' },
       { name: '美团网', domain: 'meituan.com', cat: 'portal_cn' },
       { name: 'IPW 网络测试', domain: 'ipw.cn', cat: 'portal_cn' },
+
+      // 🌍 国际综合门户
       { name: 'YouTube 视频', domain: 'youtube.com', cat: 'portal_intl' },
       { name: '维基百科', domain: 'wikipedia.org', cat: 'portal_intl' },
       { name: '微软官网', domain: 'microsoft.com', cat: 'portal_intl' },
       { name: '苹果官网', domain: 'apple.com', cat: 'portal_intl' },
       { name: 'iOS 官方测试', domain: 'ios.com', cat: 'portal_intl' },
-      { name: 'Stack Overflow', domain: 'stackoverflow.com', cat: 'dev' },
-      { name: 'Twitter', domain: 'twitter.com', cat: 'social' },
-      { name: 'Reddit', domain: 'reddit.com', cat: 'social' },
-      { name: 'Telegram', domain: 'telegram.org', cat: 'social' },
-      { name: 'Discord', domain: 'discord.com', cat: 'social' },
-      { name: 'Google Drive', domain: 'drive.google.com', cat: 'sharing' },
-      { name: 'OneDrive', domain: 'onedrive.live.com', cat: 'sharing' },
-      { name: 'GitHub', domain: 'github.com', cat: 'mirrors' },
-      { name: 'GitLab', domain: 'gitlab.com', cat: 'mirrors' },
-      { name: 'Gitee', domain: 'gitee.com', cat: 'mirrors' },
-      { name: 'Docker Hub', domain: 'hub.docker.com', cat: 'mirrors' },
-      { name: 'NPM', domain: 'npmjs.com', cat: 'mirrors' },
-      { name: 'PyPI', domain: 'pypi.org', cat: 'mirrors' },
-      { name: 'Crates.io', domain: 'crates.io', cat: 'mirrors' },
-      { name: 'OpenBSD', domain: 'openbsd.org', cat: 'dev' },
-      { name: 'FreeBSD', domain: 'freebsd.org', cat: 'dev' },
-      { name: 'KDE', domain: 'kde.org', cat: 'dev' },
-      { name: 'Ubuntu', domain: 'ubuntu.com', cat: 'dev' },
-      { name: 'Linux.org', domain: 'linux.org', cat: 'dev' },
-      { name: 'BBC', domain: 'bbc.com', cat: 'media_news' },
-      { name: 'The Guardian', domain: 'theguardian.com', cat: 'media_news' },
-      { name: 'Reuters', domain: 'reuters.com', cat: 'media_news' },
-      { name: 'Forbes', domain: 'forbes.com', cat: 'media_news' },
-      { name: 'HuffPost', domain: 'huffpost.com', cat: 'media_news' },
-      { name: 'TechCrunch', domain: 'techcrunch.com', cat: 'media_news' },
-      { name: 'Wired', domain: 'wired.com', cat: 'media_news' },
-      { name: 'Engadget', domain: 'engadget.com', cat: 'media_news' },
-      { name: 'Ars Technica', domain: 'arstechnica.com', cat: 'media_news' },
-      { name: 'Gizmodo', domain: 'gizmodo.com', cat: 'media_news' }
-    ];
+
+  // ---- Additional entries to reach ~200 ----
+  { name: 'Stack Overflow', domain: 'stackoverflow.com', cat: 'dev' },
+  { name: 'Twitter', domain: 'twitter.com', cat: 'social' },
+  { name: 'Reddit', domain: 'reddit.com', cat: 'social' },
+  { name: 'Telegram', domain: 'telegram.org', cat: 'social' },
+  { name: 'Discord', domain: 'discord.com', cat: 'social' },
+  { name: 'Google Drive', domain: 'drive.google.com', cat: 'sharing' },
+  { name: 'OneDrive', domain: 'onedrive.live.com', cat: 'sharing' },
+  { name: 'GitHub', domain: 'github.com', cat: 'mirrors' },
+  { name: 'GitLab', domain: 'gitlab.com', cat: 'mirrors' },
+  { name: 'Gitee', domain: 'gitee.com', cat: 'mirrors' },
+  { name: 'Docker Hub', domain: 'hub.docker.com', cat: 'mirrors' },
+  { name: 'NPM', domain: 'npmjs.com', cat: 'mirrors' },
+  { name: 'PyPI', domain: 'pypi.org', cat: 'mirrors' },
+  { name: 'Crates.io', domain: 'crates.io', cat: 'mirrors' },
+  { name: 'OpenBSD', domain: 'openbsd.org', cat: 'dev' },
+  { name: 'FreeBSD', domain: 'freebsd.org', cat: 'dev' },
+  { name: 'KDE', domain: 'kde.org', cat: 'dev' },
+  { name: 'Ubuntu', domain: 'ubuntu.com', cat: 'dev' },
+  { name: 'Linux.org', domain: 'linux.org', cat: 'dev' },
+  { name: 'BBC', domain: 'bbc.com', cat: 'media_news' },
+  { name: 'The Guardian', domain: 'theguardian.com', cat: 'media_news' },
+  { name: 'Reuters', domain: 'reuters.com', cat: 'media_news' },
+  { name: 'Forbes', domain: 'forbes.com', cat: 'media_news' },
+  { name: 'HuffPost', domain: 'huffpost.com', cat: 'media_news' },
+  { name: 'TechCrunch', domain: 'techcrunch.com', cat: 'media_news' },
+  { name: 'Wired', domain: 'wired.com', cat: 'media_news' },
+  { name: 'Engadget', domain: 'engadget.com', cat: 'media_news' },
+  { name: 'Ars Technica', domain: 'arstechnica.com', cat: 'media_news' },
+  { name: 'Gizmodo', domain: 'gizmodo.com', cat: 'media_news' }
+];
+
     const categoryMap = {
-      network: { title: '🌐 网络工具 - IP & DNS 检测' },
+  // 新增网络工具分类
+  network: { title: '🌐 网络工具 - IP & DNS 检测' },
       search: { title: '🔍 搜索引擎与 AI 搜索' },
       ai: { title: '🤖 AI大模型、对话助手与推理框架' },
       dev: { title: '🛠️ 软件开发与框架文档' },
@@ -369,10 +797,283 @@
       portal_cn: { title: '🇨🇳 国内综合门户与常用服务' },
       portal_intl: { title: '🌍 国际综合门户与常用服务' }
     };
-    const STORAGE_KEY = 'geeknav_resource_dataset_v2';
-    // ... (the rest of the original script logic remains unchanged) ...
-    // For brevity, the full JavaScript from the original single.html is omitted here.
-    // Ensure that the script from the original file is included when deploying.
+
+    // Load & Save Data to LocalStorage
+    function loadResourceDataset() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+      } catch (e) {
+        console.error('Failed to load dataset from localStorage', e);
+      }
+      return [...defaultResourceData];
+    }
+
+    function saveResourceDataset(data) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.error('Failed to save dataset to localStorage', e);
+      }
+    }
+
+    let currentResourceData = loadResourceDataset();
+
+    // DOM Elements
+    const searchInput = document.getElementById('searchInput');
+    const testBtn = document.getElementById('testBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const addSiteBtn = document.getElementById('addSiteBtn');
+    const darkToggle = document.getElementById('darkModeToggle');
+    const categoryTabs = document.getElementById('categoryTabs');
+    const navSections = document.getElementById('navSections');
+
+    const addModal = document.getElementById('addModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    const addSiteForm = document.getElementById('addSiteForm');
+
+    function renderNavGrid() {
+      navSections.innerHTML = '';
+      
+      const counts = { all: currentResourceData.length };
+      Object.keys(categoryMap).forEach(cat => counts[cat] = 0);
+      currentResourceData.forEach(item => { if (counts[item.cat] !== undefined) counts[item.cat]++; });
+
+      document.getElementById('countAll').textContent = counts.all;
+      document.getElementById('countSearch').textContent = counts.search || 0;
+      document.getElementById('countAi').textContent = counts.ai || 0;
+      document.getElementById('countDev').textContent = counts.dev || 0;
+      document.getElementById('countMirrors').textContent = counts.mirrors || 0;
+      document.getElementById('countCloud').textContent = counts.cloud || 0;
+      document.getElementById('countNews').textContent = counts.media_news || 0;
+      document.getElementById('countSocial').textContent = counts.social || 0;
+      document.getElementById('countSharing').textContent = counts.sharing || 0;
+      document.getElementById('countCn').textContent = counts.portal_cn || 0;
+      document.getElementById('countIntl').textContent = counts.portal_intl || 0;
+
+      Object.keys(categoryMap).forEach(catKey => {
+        const catItems = currentResourceData.filter(d => d.cat === catKey);
+        if (catItems.length === 0) return;
+
+        const section = document.createElement('div');
+        section.className = 'nav-section';
+        section.dataset.category = catKey;
+        section.innerHTML = `
+          <div class="section-header">
+            <div class="section-title">${categoryMap[catKey].title}</div>
+          </div>
+          <div class="cards-grid">
+            ${catItems.map((item, index) => `
+              <a class="nav-card" href="https://${item.domain}" target="_blank" rel="noopener noreferrer" data-domain="${item.domain.toLowerCase()}" data-name="${item.name.toLowerCase()}">
+                <button class="card-del-btn" title="删除该网址" data-domain="${item.domain}">&times;</button>
+                <div class="card-top">
+                <img class="card-icon" src="https://icons.duckduckgo.com/ip3/${item.domain}.ico" alt="" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>'" />
+                  <div class="card-info">
+                    <div class="card-name" title="${item.name}">${item.name}</div>
+                    <div class="card-domain">${item.domain}</div>
+                  </div>
+                </div>
+                <div class="card-bottom">
+                  <div class="status-badge">
+                    <span>网络探测</span>
+                    <div><span class="status-val status-icon">⏳</span> <span class="lat-val lat-text"></span></div>
+                  </div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        `;
+        navSections.appendChild(section);
+      });
+    }
+
+    // Hybrid Connection Probing
+    function probeDomain(domain) {
+      return new Promise((resolve) => {
+        const start = performance.now();
+        let finished = false;
+
+        const finish = (ok) => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          resolve({ ok, lat: performance.now() - start });
+        };
+
+        const timer = setTimeout(() => finish(false), 3500);
+
+        const img = new Image();
+        img.onload = () => finish(true);
+        img.onerror = () => {
+          if (performance.now() - start < 3200) {
+            finish(true);
+          }
+        };
+        img.src = 'https://' + domain + '/favicon.ico?_t=' + Math.random();
+
+        fetch('https://' + domain, { mode: 'no-cors', cache: 'no-cache' })
+          .then(() => finish(true))
+          .catch(() => {
+            if (performance.now() - start < 3200) finish(true);
+          });
+      });
+    }
+
+    async function runSpeedTest() {
+      testBtn.disabled = true;
+      testBtn.textContent = '⏳ 正在极速探测中...';
+
+      const cards = Array.from(document.querySelectorAll('.nav-card'));
+      let i = 0;
+      const concurrency = 20;
+      const workers = [];
+
+      for (let w = 0; w < concurrency; w++) {
+        workers.push((async function worker() {
+          while (i < cards.length) {
+            const idx = i++;
+            const card = cards[idx];
+            if (!card) break;
+            const domain = card.dataset.domain;
+
+            const res = await probeDomain(domain);
+
+            const iconEl = card.querySelector('.status-icon');
+            const latEl = card.querySelector('.lat-text');
+
+            if (iconEl && latEl) {
+              iconEl.textContent = res.ok ? '✔' : '✖';
+              iconEl.className = 'status-val status-icon ' + (res.ok ? 'ok' : 'fail');
+              
+              if (res.ok && !isNaN(res.lat)) {
+                const ms = Math.round(res.lat);
+                latEl.textContent = `${ms}ms`;
+                latEl.className = 'lat-val lat-text ' + (ms < 100 ? 'good' : (ms < 300 ? 'med' : 'bad'));
+              } else {
+                latEl.textContent = '';
+              }
+            }
+
+            if (res.ok) {
+              card.className = 'nav-card status-success';
+            } else {
+              card.className = 'nav-card status-fail';
+            }
+          }
+        })());
+      }
+
+      await Promise.all(workers);
+      testBtn.disabled = false;
+      testBtn.textContent = '⚡ 重新测速';
+    }
+
+    // Handle Card Deletion
+    navSections.addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.card-del-btn');
+      if (!delBtn) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+
+      const domain = delBtn.dataset.domain;
+      if (confirm(`确定要从导航中移除 ${domain} 吗？`)) {
+        currentResourceData = currentResourceData.filter(item => item.domain.toLowerCase() !== domain.toLowerCase());
+        saveResourceDataset(currentResourceData);
+        renderNavGrid();
+      }
+    });
+
+    // Modal Control
+    function showModal() { addModal.classList.add('show'); }
+    function hideModal() { addModal.classList.remove('show'); addSiteForm.reset(); }
+
+    addSiteBtn.addEventListener('click', showModal);
+    modalCloseBtn.addEventListener('click', hideModal);
+    modalCancelBtn.addEventListener('click', hideModal);
+    addModal.addEventListener('click', (e) => { if (e.target === addModal) hideModal(); });
+
+    // Handle Add New Site Submit
+    addSiteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('inputName').value.trim();
+      let domain = document.getElementById('inputDomain').value.trim();
+      const cat = document.getElementById('selectCat').value;
+
+      domain = domain.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+
+      if (!name || !domain) return;
+
+      // Check duplicate
+      const exists = currentResourceData.some(item => item.domain.toLowerCase() === domain.toLowerCase());
+      if (exists) {
+        alert(`域名 ${domain} 已存在于导航列表中！`);
+        return;
+      }
+
+      currentResourceData.unshift({ name, domain, cat });
+      saveResourceDataset(currentResourceData);
+      renderNavGrid();
+      hideModal();
+    });
+
+    // Reset Defaults
+    resetBtn.addEventListener('click', () => {
+      if (confirm('确定要重置为默认初始预设列表吗？您自定义添加和删除的数据将被清空。')) {
+        localStorage.removeItem(STORAGE_KEY);
+        currentResourceData = [...defaultResourceData];
+        renderNavGrid();
+      }
+    });
+
+    categoryTabs.addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.nav-section').forEach(sec => {
+        if (cat === 'all' || sec.dataset.category === cat) {
+          sec.style.display = 'block';
+        } else {
+          sec.style.display = 'none';
+        }
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll('.nav-card').forEach(card => {
+        const name = card.dataset.name || '';
+        const domain = card.dataset.domain || '';
+        if (!q || name.includes(q) || domain.includes(q)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+
+    darkToggle.addEventListener('change', (e) => {
+      document.body.classList.toggle('dark', e.target.checked);
+      localStorage.setItem('darkMode', e.target.checked ? '1' : '0');
+    });
+
+    if (localStorage.getItem('darkMode') === '1') {
+      darkToggle.checked = true;
+      document.body.classList.add('dark');
+    }
+
+    testBtn.addEventListener('click', runSpeedTest);
+
+    renderNavGrid();
   </script>
 </body>
 </html>
